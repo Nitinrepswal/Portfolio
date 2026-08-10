@@ -1,0 +1,158 @@
+/* macOS Window System Styles */
+
+:root {
+    --window-bg: rgba(235, 235, 235, 0.85); /* Light mode vibe for now or keep it dark? The wallpaper is dark. Let's make the windows dark mode inspired to match developer focus */
+    --window-border: rgba(255, 255, 255, 0.1);
+    --window-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    --window-shadow-active: 0 30px 60px rgba(0, 0, 0, 0.6);
+    --titlebar-bg: rgba(40, 40, 40, 0.8);
+    --titlebar-text: #ffffff;
+    --content-bg: rgba(30, 30, 30, 0.95);
+    --content-text: #e0e0e0;
+    
+    --traffic-close: #ff5f56;
+    --traffic-minimize: #ffbd2e;
+    --traffic-maximize: #27c93f;
+    --traffic-hover: rgba(0, 0, 0, 0.5);
+}
+
+.window {
+    position: absolute;
+    width: 700px;
+    height: 450px;
+    background: var(--content-bg);
+    border: 1px solid var(--window-border);
+    backdrop-filter: var(--os-blur);
+    -webkit-backdrop-filter: var(--os-blur);
+    border-radius: 10px;
+    box-shadow: var(--window-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Phase 9 Window Animations */
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
+    transform-origin: center center;
+}
+
+.window.active {
+    box-shadow: var(--window-shadow-active);
+}
+
+.window.closing {
+    transform: scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.window.minimized {
+    /* Rough approximation of minimizing to dock */
+    transform: translateY(300px) scale(0.2);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.window.maximized {
+    /* JS will set exact dimensions, but we can kill border-radius if we want. Keeping it slightly rounded looks nicer */
+    border-radius: 6px;
+}
+
+/* Title Bar */
+.title-bar {
+    height: 38px;
+    background: var(--titlebar-bg);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    cursor: grab;
+    user-select: none;
+    position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+}
+
+.title-bar:active {
+    cursor: grabbing;
+}
+
+.traffic-lights {
+    display: flex;
+    gap: 8px;
+    z-index: 2; /* keep above title */
+}
+
+.traffic-light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    outline: none;
+}
+
+.traffic-light::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+}
+
+.traffic-lights:hover .traffic-light::before {
+    opacity: 1;
+}
+
+.close-btn { background-color: var(--traffic-close); }
+.close-btn::before {
+    background: var(--traffic-hover);
+    clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+}
+
+.minimize-btn { background-color: var(--traffic-minimize); }
+.minimize-btn::before {
+    background: var(--traffic-hover);
+    width: 8px;
+    height: 2px;
+}
+
+.maximize-btn { background-color: var(--traffic-maximize); }
+.maximize-btn::before {
+    background: var(--traffic-hover);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 0, 20% 0, 20% 80%, 80% 80%, 80% 20%, 0 20%, 0 0); /* roughly arrows */
+}
+
+.window-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--titlebar-text);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Window Content */
+.window-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    color: var(--content-text);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .window {
+        /* JS will still try to set inline styles, so we might need !important if we want to override, 
+           but it's better to let JS detect mobile and set appropriate inline bounds */
+    }
+}

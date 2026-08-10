@@ -1,0 +1,380 @@
+/* OS Layer Styles (Spotlight, Context Menu, Notifications, Boot, Settings) */
+
+/* Theming Variables (Default: Dark) */
+:root {
+    --theme-bg: #121212;
+    --theme-text: #ffffff;
+    --os-panel-bg: rgba(30, 30, 30, 0.7);
+    --os-panel-border: rgba(255, 255, 255, 0.1);
+    --os-hover-bg: rgba(255, 255, 255, 0.1);
+    --os-blur: blur(20px);
+}
+
+[data-theme="light"] {
+    --theme-bg: #f5f5f7;
+    --theme-text: #1d1d1f;
+    --os-panel-bg: rgba(255, 255, 255, 0.7);
+    --os-panel-border: rgba(0, 0, 0, 0.1);
+    --os-hover-bg: rgba(0, 0, 0, 0.05);
+    /* Update existing vars if needed for light mode */
+    --window-bg: rgba(245, 245, 245, 0.95);
+    --window-border: rgba(0, 0, 0, 0.1);
+    --titlebar-bg: rgba(230, 230, 230, 0.8);
+    --titlebar-text: #1d1d1f;
+    --content-bg: #ffffff;
+    --content-text: #1d1d1f;
+    --menu-bg: rgba(255, 255, 255, 0.5);
+    --menu-text: #1d1d1f;
+    --dock-bg: rgba(255, 255, 255, 0.4);
+    --dock-border: rgba(0, 0, 0, 0.1);
+}
+
+/* Boot Screen */
+#boot-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    color: white;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+}
+
+#boot-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.boot-logo {
+    font-size: 48px;
+    margin-bottom: 24px;
+    animation: pulse 1.5s infinite;
+}
+
+.boot-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Spotlight Search */
+#spotlight-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 9990;
+    display: flex;
+    justify-content: center;
+    padding-top: 15vh;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+#spotlight-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.spotlight-container {
+    width: 100%;
+    max-width: 650px;
+    background: var(--os-panel-bg);
+    backdrop-filter: var(--os-blur);
+    -webkit-backdrop-filter: var(--os-blur);
+    border: 1px solid var(--os-panel-border);
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.98);
+    transition: transform 0.15s ease;
+}
+
+#spotlight-overlay.visible .spotlight-container {
+    transform: scale(1);
+}
+
+.spotlight-input-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--os-panel-border);
+}
+
+.spotlight-icon {
+    font-size: 24px;
+    margin-right: 16px;
+    color: var(--theme-text);
+    opacity: 0.5;
+}
+
+.spotlight-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--theme-text);
+    font-size: 24px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.spotlight-results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+.spotlight-result-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    color: var(--theme-text);
+    border-radius: 8px;
+    margin: 0 var(--space-sm);
+    transition: background 0.1s;
+}
+
+.spotlight-result-item.selected,
+.spotlight-result-item:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.spotlight-result-icon {
+    font-size: 20px;
+    margin-right: var(--space-md);
+    width: 24px;
+    text-align: center;
+}
+
+.spotlight-result-title {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.spotlight-result-type {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-left: auto;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Context Menu */
+#context-menu {
+    position: fixed;
+    background: var(--os-panel-bg);
+    backdrop-filter: var(--os-blur);
+    -webkit-backdrop-filter: var(--os-blur);
+    border: 1px solid var(--os-panel-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    padding: 6px;
+    z-index: 9995;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transform-origin: top left;
+    transition: opacity 0.1s ease, transform 0.1s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+#context-menu.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.context-menu-item {
+    padding: 6px 12px;
+    font-size: 14px;
+    color: var(--theme-text);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.context-menu-item:hover {
+    background: #0058d0;
+    color: white;
+}
+
+.context-menu-separator {
+    height: 1px;
+    background: var(--os-panel-border);
+    margin: 6px 0;
+}
+
+/* Top Menu Dropdown */
+.menu-dropdown {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background: var(--os-panel-bg);
+    backdrop-filter: var(--os-blur);
+    -webkit-backdrop-filter: var(--os-blur);
+    border: 1px solid var(--os-panel-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    padding: 6px;
+    z-index: 9995;
+    display: none;
+    flex-direction: column;
+}
+
+.menu-item {
+    position: relative; /* for dropdown anchor */
+}
+
+.menu-item.active .menu-dropdown {
+    display: flex;
+}
+
+/* Notifications */
+#notifications-container {
+    position: fixed;
+    top: 40px;
+    right: 20px;
+    width: 320px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none; /* Let clicks pass through container */
+}
+
+.notification-toast {
+    background: var(--os-panel-bg);
+    backdrop-filter: var(--os-blur);
+    -webkit-backdrop-filter: var(--os-blur);
+    border: 1px solid var(--os-panel-border);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--theme-text);
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    pointer-events: auto;
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-toast.show {
+    transform: translateX(0);
+}
+
+.notification-toast.hide {
+    transform: translateX(120%);
+    opacity: 0;
+}
+
+.notif-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.notif-msg {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* Settings Window Content */
+.settings-container {
+    padding: 30px;
+    color: var(--content-text);
+    font-family: 'Inter', sans-serif;
+}
+
+.settings-section {
+    margin-bottom: 24px;
+}
+
+.settings-section h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    margin-bottom: 12px;
+}
+
+.settings-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: rgba(128, 128, 128, 0.1);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.settings-option:hover {
+    background: rgba(128, 128, 128, 0.2);
+}
+
+/* About This Mac Content */
+.about-mac-container {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--content-text);
+    font-family: 'Inter', sans-serif;
+}
+
+.about-mac-logo {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.about-mac-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.about-mac-specs {
+    font-size: 13px;
+    opacity: 0.8;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.about-mac-btn {
+    background: rgba(128, 128, 128, 0.2);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: var(--content-text);
+    cursor: pointer;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}

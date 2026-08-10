@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nitin Repswal — Software Developer</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Interactive developer portfolio of Nitin Repswal, focused on software development, DSA, AI/ML and building useful products.">
+    <meta name="keywords" content="Nitin Repswal, Software Developer, Portfolio, Developer, macOS Portfolio, Web Development, AI, ML, C++, JavaScript">
+    <meta name="author" content="Nitin Repswal">
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nitinrepswal.dev/"> <!-- Update when domain is known -->
+    <meta property="og:title" content="Nitin Repswal — Software Developer">
+    <meta property="og:description" content="Interactive developer portfolio of Nitin Repswal, focused on software development, DSA, AI/ML and building useful products.">
+    <meta property="og:image" content="assets/wallpaper/mac-wallpaper.png"> <!-- Fallback local image -->
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://nitinrepswal.dev/">
+    <meta property="twitter:title" content="Nitin Repswal — Software Developer">
+    <meta property="twitter:description" content="Interactive developer portfolio of Nitin Repswal, focused on software development, DSA, AI/ML and building useful products.">
+    <meta property="twitter:image" content="assets/wallpaper/mac-wallpaper.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/windows.css">
+    <link rel="stylesheet" href="css/finder.css">
+    <link rel="stylesheet" href="css/about.css">
+    <link rel="stylesheet" href="css/projects.css">
+    <link rel="stylesheet" href="css/terminal.css">
+    <link rel="stylesheet" href="css/safari.css">
+    <link rel="stylesheet" href="css/resume.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="css/osLayer.css">
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Boot Screen -->
+    <div id="boot-screen">
+        <div class="boot-logo">🍎</div>
+        <div class="boot-text">NitinOS Starting...</div>
+    </div>
+
+    <!-- Notifications Container -->
+    <div id="notifications-container"></div>
+
+    <!-- Top Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-left">
+            <div class="menu-item apple-icon">🍎</div>
+            <div class="menu-item bold">Finder</div>
+            <div class="menu-item hide-mobile">File</div>
+            <div class="menu-item hide-mobile">Edit</div>
+            <div class="menu-item hide-mobile">View</div>
+            <div class="menu-item hide-mobile">Go</div>
+            <div class="menu-item hide-mobile">Window</div>
+            <div class="menu-item hide-mobile">Help</div>
+        </div>
+        <div class="menu-right">
+            <span class="menu-icon">
+                <!-- Wi-Fi SVG Placeholder -->
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+            </span>
+            <span class="menu-icon">
+                <!-- Battery SVG Placeholder -->
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+            </span>
+            <span class="menu-item" id="clock">Mon 9:41 AM</span>
+        </div>
+    </div>
+
+    <!-- Desktop Environment -->
+    <main class="desktop">
+        <!-- Desktop Icons Grid -->
+        <div class="desktop-icons">
+            <div class="desktop-icon" data-app="projects">
+                <img src="assets/icons/projects.png" alt="Projects">
+                <span>Projects</span>
+            </div>
+            <div class="desktop-icon" data-app="resume">
+                <img src="assets/icons/resume.png" alt="Resume">
+                <span>Resume</span>
+            </div>
+            <div class="desktop-icon" data-app="about">
+                <img src="assets/icons/about.png" alt="About Me">
+                <span>About Me</span>
+            </div>
+            <div class="desktop-icon" data-app="safari">
+                <img src="assets/icons/safari.png" alt="Safari">
+                <span>Safari</span>
+            </div>
+            <div class="desktop-icon" data-app="contact">
+                <img src="assets/icons/contact.png" alt="Contact">
+                <span>Contact</span>
+            </div>
+            <div class="desktop-icon" data-app="terminal">
+                <img src="assets/icons/terminal.png" alt="Terminal">
+                <span>Terminal</span>
+            </div>
+        </div>
+
+        <!-- Window Container (populated dynamically) -->
+        <div id="window-container"></div>
+    </main>
+
+    <!-- Context Menu -->
+    <div id="context-menu">
+        <div class="context-menu-item" id="ctx-new-folder">New Folder</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" id="ctx-refresh">Refresh</div>
+        <div class="context-menu-item" id="ctx-wallpaper">Change Wallpaper</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" id="ctx-terminal">Open Terminal</div>
+        <div class="context-menu-item" id="ctx-finder">Open Finder</div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" id="ctx-about">About This Mac</div>
+    </div>
+
+    <!-- Spotlight Search -->
+    <div id="spotlight-overlay">
+        <div class="spotlight-container">
+            <div class="spotlight-input-wrapper">
+                <span class="spotlight-icon">🔍</span>
+                <input type="text" id="spotlight-input" class="spotlight-input" placeholder="Search Nitin's Mac" autocomplete="off">
+            </div>
+            <div class="spotlight-results" id="spotlight-results">
+                <!-- Results dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- System Scripts -->
+    <div class="dock-container">
+        <footer class="dock">
+            <div class="dock-icon-wrapper" data-tooltip="Finder" tabindex="0" role="button" aria-label="Open Finder">
+                <div class="tooltip">Finder</div>
+                <img class="dock-icon" src="assets/icons/finder.png" alt="Finder">
+                <div class="running-indicator"></div>
+            </div>
+            <div class="dock-icon-wrapper" data-tooltip="Projects" tabindex="0" role="button" aria-label="Open Projects">
+                <div class="tooltip">Projects</div>
+                <img class="dock-icon" src="assets/icons/projects.png" alt="Projects">
+                <div class="running-indicator"></div>
+            </div>
+            <div class="dock-icon-wrapper" data-tooltip="Terminal" tabindex="0" role="button" aria-label="Open Terminal">
+                <div class="tooltip">Terminal</div>
+                <img class="dock-icon" src="assets/icons/terminal.png" alt="Terminal">
+                <div class="running-indicator"></div>
+            </div>
+            <div class="dock-icon-wrapper" data-tooltip="Safari" tabindex="0" role="button" aria-label="Open Safari">
+                <div class="tooltip">Safari</div>
+                <img class="dock-icon" src="assets/icons/safari.png" alt="Safari">
+                <div class="running-indicator"></div>
+            </div>
+            <div class="dock-icon-wrapper" data-tooltip="Resume" tabindex="0" role="button" aria-label="Open Resume">
+                <div class="tooltip">Resume</div>
+                <img class="dock-icon" src="assets/icons/resume.png" alt="Resume">
+                <div class="running-indicator"></div>
+            </div>
+            <div class="dock-icon-wrapper" data-tooltip="Contact" tabindex="0" role="button" aria-label="Open Contact">
+                <div class="tooltip">Contact</div>
+                <img class="dock-icon" src="assets/icons/contact.png" alt="Contact">
+                <div class="running-indicator"></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

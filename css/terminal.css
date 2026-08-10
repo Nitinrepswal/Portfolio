@@ -1,0 +1,147 @@
+/* Terminal Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+.terminal-container {
+    height: 100%;
+    width: 100%;
+    background: rgba(15, 15, 20, 0.95);
+    color: #e0e0e0;
+    font-family: 'JetBrains Mono', monospace, Consolas, "Courier New";
+    font-size: 14px;
+    border-radius: 0 0 10px 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+
+.terminal-output {
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-line {
+    margin-bottom: 4px;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Prompt Line */
+.terminal-input-line {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 4px;
+    padding-bottom: 20px; /* buffer at bottom */
+}
+
+.terminal-prompt {
+    color: #4ade80; /* Subtle green for username */
+    margin-right: 8px;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.terminal-prompt .host {
+    color: #60a5fa; /* Subtle blue */
+}
+
+.terminal-prompt .path {
+    color: #c084fc; /* Subtle purple */
+}
+
+.terminal-input-wrapper {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: #e0e0e0;
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+    outline: none;
+    padding: 0;
+    caret-color: #e0e0e0;
+}
+
+/* Formatted Output Colors */
+.term-color-green { color: #4ade80; }
+.term-color-blue { color: #60a5fa; }
+.term-color-yellow { color: #facc15; }
+.term-color-red { color: #f87171; }
+.term-color-muted { color: #9ca3af; }
+
+/* Interactive Output Elements */
+.term-link {
+    color: #60a5fa;
+    text-decoration: underline;
+    text-decoration-color: rgba(96, 165, 250, 0.4);
+    cursor: pointer;
+}
+
+.term-link:hover {
+    text-decoration-color: rgba(96, 165, 250, 1);
+}
+
+.term-bold {
+    font-weight: bold;
+}
+
+/* Neofetch layout */
+.neofetch-container {
+    display: flex;
+    gap: 24px;
+    margin: 12px 0;
+    align-items: center;
+}
+
+.neofetch-logo {
+    color: #60a5fa;
+    line-height: 1.2;
+    white-space: pre;
+    font-weight: bold;
+}
+
+.neofetch-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.neofetch-title {
+    color: #4ade80;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.neofetch-title .host {
+    color: #e0e0e0;
+}
+
+.neofetch-sep {
+    color: #e0e0e0;
+    margin-bottom: 4px;
+}
+
+.neofetch-row .key {
+    color: #c084fc;
+    font-weight: bold;
+    display: inline-block;
+    width: 80px;
+}
+
+@media (max-width: 600px) {
+    .terminal-container {
+        font-size: 12px;
+        padding: 12px;
+    }
+    .neofetch-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}

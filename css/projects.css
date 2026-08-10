@@ -1,0 +1,206 @@
+/* Project Details Styles */
+
+.project-detail-container {
+    padding: 32px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 24px;
+}
+
+.project-title-group .project-name {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+}
+
+.project-title-group .project-category {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.project-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.project-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 88, 208, 0.8);
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.project-btn:hover {
+    background: rgba(0, 88, 208, 1);
+    transform: translateY(-1px);
+}
+
+.project-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.project-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Main Content Grid */
+.project-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+/* Left Column: Media & Description */
+.project-main-col {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.project-media {
+    width: 100%;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.project-media-placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.project-section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.project-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Right Column: Metadata */
+.project-meta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    height: fit-content;
+}
+
+.meta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.meta-value {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tech-tag {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: background 0.2s;
+}
+
+.tech-tag:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.feature-list {
+    margin: 0;
+    padding-left: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.feature-list li {
+    margin-bottom: 4px;
+}
+
+/* Back Navigation (If rendered inside Finder) */
+.back-to-projects {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 24px;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.back-to-projects:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .project-content {
+        grid-template-columns: 1fr;
+    }
+    .project-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+}
