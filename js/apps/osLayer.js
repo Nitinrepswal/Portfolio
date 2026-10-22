@@ -1,5 +1,5 @@
 import { profileData } from '../data/profile.js';
-import { projectData } from '../data/projects.js';
+import { projectData } from '../data/projects.js?v=4';
 
 export class OSLayer {
     constructor(windowManager, finderApp, terminalApp, browserApp, resumeApp, contactApp) {
@@ -166,11 +166,18 @@ export class OSLayer {
 
         // Search Projects
         projectData.forEach(proj => {
-            if (proj.name.toLowerCase().includes(query) || proj.description.toLowerCase().includes(query)) {
+            const matchesTech = proj.technologies && proj.technologies.some(t => t.toLowerCase().includes(query));
+            if (
+                proj.name.toLowerCase().includes(query) ||
+                (proj.displayName && proj.displayName.toLowerCase().includes(query)) ||
+                (proj.tagline && proj.tagline.toLowerCase().includes(query)) ||
+                proj.description.toLowerCase().includes(query) ||
+                matchesTech
+            ) {
                 results.push({
-                    title: proj.name,
+                    title: proj.displayName || proj.name,
                     type: 'Project',
-                    icon: '🚀',
+                    icon: proj.icon ? `<img src="${proj.icon}" style="width:20px;height:20px;border-radius:4px;vertical-align:middle;object-fit:cover;">` : '🚀',
                     action: () => {
                         this.finderApp.open(`/Projects/${proj.name}`);
                     }

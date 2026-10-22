@@ -58,7 +58,7 @@ ${profileData.bio}
         const query = args.join(' ').toLowerCase();
         
         // Find matching project
-        const match = projectData.find(p => p.name.toLowerCase().includes(query));
+        const match = projectData.find(p => p.name.toLowerCase().includes(query) || (p.id && p.id.toLowerCase().includes(query)));
         if (match) {
             const targetPath = `/Projects/${match.name}`;
             context.finderApp.open(targetPath);

@@ -1,5 +1,5 @@
-import { fileSystem, getFileSystemNode, searchFileSystem } from '../data/filesystem.js';
-import { renderProjectDetail } from '../data/projects.js';
+import { fileSystem, getFileSystemNode, searchFileSystem } from '../data/filesystem.js?v=4';
+import { renderProjectDetail } from '../data/projects.js?v=4';
 
 export class BrowserApp {
     constructor(windowManager, aboutApp) {
@@ -349,22 +349,34 @@ class BrowserTab {
         } else if (cleanUrl.startsWith('nitinrepswal.dev/projects')) {
             const parts = cleanUrl.split('/').filter(Boolean);
             if (parts.length === 1 || parts[1] === 'projects') {
-                // Just the projects list, we can render finder's file list or custom HTML
+                // Just the projects list
                 this.title = "Projects";
                 const projectsNode = getFileSystemNode('/Projects');
                 html = this.renderProjectsList(projectsNode);
             } else {
                 // Specific project
-                let projectName = parts[parts.length - 1]; // e.g. codevise
+                let projectName = parts[parts.length - 1]; // e.g. iris, codevise
                 let targetPath = '';
-                if (projectName.includes('codevise')) targetPath = '/Projects/CodeVise';
-                else if (projectName.includes('formkey')) targetPath = '/Projects/FormKey';
-                else if (projectName.includes('churn')) targetPath = '/Projects/Bank Churn Prediction';
-                else if (projectName.includes('dsa')) targetPath = '/Projects/DSA Mentor';
+                const projectsFolder = getFileSystemNode('/Projects');
+                if (projectsFolder && projectsFolder.children) {
+                    const match = projectsFolder.children.find(c => 
+                        c.name.toLowerCase() === projectName.toLowerCase() ||
+                        (c.metadata && c.metadata.id && c.metadata.id.toLowerCase() === projectName.toLowerCase()) ||
+                        c.name.toLowerCase().includes(projectName.toLowerCase())
+                    );
+                    if (match) targetPath = match.path;
+                }
+                if (!targetPath) {
+                    if (projectName.includes('iris')) targetPath = '/Projects/IRIS';
+                    else if (projectName.includes('codevise')) targetPath = '/Projects/CodeVise';
+                    else if (projectName.includes('formkey')) targetPath = '/Projects/FormKey';
+                    else if (projectName.includes('churn')) targetPath = '/Projects/Bank Churn Prediction';
+                    else if (projectName.includes('dsa')) targetPath = '/Projects/DSA Mentor';
+                }
                 const node = getFileSystemNode(targetPath);
                 if (node) {
-                    this.title = node.metadata?.name || node.name;
-                    // Render project detail (passing null for finderInstance so it doesn't render back button for Finder)
+                    this.title = node.metadata?.displayName || node.metadata?.name || node.name;
+                    // Render project detail
                     html = renderProjectDetail(node, null);
                 } else {
                     this.title = "404 Not Found";
@@ -389,6 +401,17 @@ class BrowserTab {
             this.browserApp.resumeApp.attachEvents(this.contentElement);
         } else if (cleanUrl.startsWith('nitinrepswal.dev/contact') && this.browserApp.contactApp) {
             this.browserApp.contactApp.attachEvents(this.contentElement);
+        } else if (cleanUrl.startsWith('nitinrepswal.dev/projects/')) {
+            const btnExplore = this.contentElement.querySelector('#btn-explore-project');
+            if (btnExplore) {
+                btnExplore.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = this.contentElement.querySelector('#project-architecture') || this.contentElement.querySelector('#project-features');
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
         }
     }
 
@@ -397,6 +420,10 @@ class BrowserTab {
             <div class="browser-home">
                 <h1>Nitin's Web</h1>
                 <div class="browser-favorites">
+                    <a href="nitinrepswal.dev/projects/iris" data-internal="true" class="favorite-item">
+                        <div class="favorite-icon">👁️</div>
+                        <div class="favorite-name">IRIS (AI)</div>
+                    </a>
                     <a href="nitinrepswal.dev/projects" data-internal="true" class="favorite-item">
                         <div class="favorite-icon">📁</div>
                         <div class="favorite-name">Projects</div>
@@ -421,20 +448,73 @@ class BrowserTab {
     renderProjectsList(node) {
         if (!node || !node.children) return this.renderError("Projects folder missing.");
         
-        let listHtml = node.children.map(child => {
-            const slug = child.name.toLowerCase().split(' ')[0]; // Basic slug
-            return `
-                <a href="nitinrepswal.dev/projects/${slug}" data-internal="true" style="display:block; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px; color: inherit; text-decoration: none; margin-bottom: 16px;">
-                    <div style="font-weight:bold; font-size: 18px; margin-bottom: 8px;">${child.name}</div>
-                    <div style="color: rgba(255,255,255,0.7);">${child.metadata?.description || 'Folder'}</div>
-                </a>
-            `;
-        }).join('');
+        let flagshipHtml = '';
+        let standardHtml = '';
+
+        node.children.forEach(child => {
+            const meta = child.metadata || {};
+            const slug = (meta.id || child.name.toLowerCase().split(' ')[0]);
+            
+            if (meta.flagship) {
+                const tags = (meta.technologies || []).map(t => `<span class="tag">${t}</span>`).join('');
+                flagshipHtml += `
+                    <div class="safari-flagship-card">
+                        <div class="safari-flagship-badge-row">
+                            <span class="flagship-top-badge">★ Featured Flagship Project</span>
+                            <span class="project-status-badge">${meta.status || 'Active'}</span>
+                        </div>
+                        <div class="safari-flagship-body">
+                            <img src="${meta.icon || 'assets/icons/projects.png'}" alt="${meta.name}" class="safari-flagship-icon">
+                            <div class="safari-flagship-details">
+                                <h2 class="safari-flagship-title">${meta.displayName || meta.name}</h2>
+                                <p class="safari-flagship-tagline">${meta.tagline || meta.description}</p>
+                                <div class="safari-flagship-tags">
+                                    ${tags}
+                                </div>
+                                <div class="safari-flagship-actions">
+                                    <a href="nitinrepswal.dev/projects/${slug}" data-internal="true" class="btn btn-primary">
+                                        Explore Project
+                                    </a>
+                                    ${meta.github ? `
+                                        <a href="${meta.github}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                                            View Source Code ↗
+                                        </a>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const icon = meta.icon ? `<img src="${meta.icon}" alt="${child.name}" class="safari-project-icon">` : '<div class="safari-project-icon">📁</div>';
+                const tags = (meta.technologies || []).slice(0, 4).map(t => `<span class="tag">${t}</span>`).join('');
+                standardHtml += `
+                    <a href="nitinrepswal.dev/projects/${slug}" data-internal="true" class="safari-project-card">
+                        ${icon}
+                        <div class="safari-project-info">
+                            <div class="safari-project-name">${child.name}</div>
+                            <div class="safari-project-category">${meta.category || meta.tagline || 'Project'}</div>
+                            <div class="safari-project-desc">${meta.description || ''}</div>
+                            <div class="project-tags" style="margin-top: 8px;">
+                                ${tags}
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }
+        });
 
         return `
-            <div style="padding: 40px; max-width: 800px; margin: 0 auto;">
-                <h1 style="margin-bottom: 32px;">Projects</h1>
-                ${listHtml}
+            <div style="padding: 32px 24px; max-width: 860px; margin: 0 auto;">
+                <div style="margin-bottom: 24px;">
+                    <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 6px; color: #ffffff;">Projects</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Selected software applications, systems, and machine learning models.</p>
+                </div>
+                ${flagshipHtml}
+                <div style="margin-top: 28px;">
+                    <div class="project-section-title" style="margin-bottom: 12px;">MORE PROJECTS</div>
+                    ${standardHtml}
+                </div>
             </div>
         `;
     }

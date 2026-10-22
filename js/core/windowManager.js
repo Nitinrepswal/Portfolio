@@ -6,8 +6,8 @@ export class WindowManager {
         
         // Configuration
         this.baseZIndex = 100;
-        this.defaultWidth = 700;
-        this.defaultHeight = 450;
+        this.defaultWidth = 980;
+        this.defaultHeight = 620;
         this.menuBarHeight = 28;
         this.dockHeight = 80;
     }
@@ -15,13 +15,20 @@ export class WindowManager {
     /**
      * Opens a window or focuses it if it's already open.
      */
-    open(appId, title, contentHTML) {
+    open(appId, title, contentHTML, options = {}) {
+        const shouldMaximize = options.maximized !== undefined 
+            ? Boolean(options.maximized) 
+            : (appId === 'finder' || appId === 'projects');
+
         if (this.windows.has(appId)) {
             const winState = this.windows.get(appId);
             if (winState.isMinimized) {
                 this.restore(appId);
             } else {
                 this.focus(appId);
+            }
+            if (shouldMaximize) {
+                this.maximize(appId);
             }
             return;
         }
@@ -31,34 +38,36 @@ export class WindowManager {
         winEl.className = 'window';
         winEl.id = `window-${appId}`;
         
-        // Determine initial position (cascade slightly based on how many windows exist)
-        const offset = (this.windows.size * 30) % 150;
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
-        
-        // Responsive size adjustment
-        let width = this.defaultWidth;
-        let height = this.defaultHeight;
-        if (screenWidth <= 768) {
-            width = screenWidth - 20;
-            height = screenHeight - this.menuBarHeight - this.dockHeight - 20;
-        }
-        
-        let left = Math.max(10, (screenWidth - width) / 2 + offset);
-        let top = Math.max(this.menuBarHeight + 10, (screenHeight - height) / 2 + offset);
+        const availableHeight = screenHeight - this.menuBarHeight - this.dockHeight;
 
-        if (screenWidth <= 768) {
-            width = screenWidth;
-            // Subtract dock and menu bar strictly
-            height = screenHeight - this.menuBarHeight - 60; // 60px is approx mobile dock height
-            left = 0;
-            top = this.menuBarHeight;
+        // Restored rect if user toggles out of full screen
+        const restoredW = Math.min(1080, Math.max(900, Math.floor(screenWidth * 0.72)));
+        const restoredH = Math.min(720, Math.max(540, Math.floor(availableHeight * 0.82)));
+        const prevRect = {
+            left: Math.max(15, Math.floor((screenWidth - restoredW) / 2)),
+            top: Math.max(this.menuBarHeight + 10, Math.floor((availableHeight - restoredH) / 2) + this.menuBarHeight),
+            width: restoredW,
+            height: restoredH
+        };
+
+        const isMobile = screenWidth <= 768;
+        const fullHeight = isMobile ? `calc(100vh - ${this.menuBarHeight}px - 60px)` : `calc(100vh - ${this.menuBarHeight}px - ${this.dockHeight}px)`;
+
+        if (shouldMaximize) {
+            winEl.style.width = '100vw';
+            winEl.style.height = fullHeight;
+            winEl.style.left = '0px';
+            winEl.style.top = `${this.menuBarHeight}px`;
+            winEl.classList.add('maximized');
+        } else {
+            winEl.style.width = `${restoredW}px`;
+            winEl.style.height = `${restoredH}px`;
+            winEl.style.left = `${prevRect.left}px`;
+            winEl.style.top = `${prevRect.top}px`;
         }
 
-        winEl.style.width = `${width}px`;
-        winEl.style.height = `${height}px`;
-        winEl.style.left = `${left}px`;
-        winEl.style.top = `${top}px`;
         winEl.style.zIndex = ++this.zIndexCounter;
 
         // Inner HTML structure
@@ -80,8 +89,8 @@ export class WindowManager {
             id: appId,
             element: winEl,
             isMinimized: false,
-            isMaximized: false,
-            prevRect: null
+            isMaximized: shouldMaximize,
+            prevRect: prevRect
         };
         this.windows.set(appId, state);
 
@@ -90,7 +99,7 @@ export class WindowManager {
         
         // Entrance animation
         winEl.style.opacity = '0';
-        winEl.style.transform = 'scale(0.95)';
+        winEl.style.transform = shouldMaximize ? 'scale(0.99)' : 'scale(0.95)';
         requestAnimationFrame(() => {
             winEl.style.opacity = '1';
             winEl.style.transform = 'scale(1)';
@@ -229,14 +238,27 @@ export class WindowManager {
         const state = this.windows.get(appId);
         if (state.isMaximized) return;
 
-        // Save current rect for restoring
+        // Save current rect for restoring if valid
         const rect = state.element.getBoundingClientRect();
-        state.prevRect = {
-            left: rect.left,
-            top: rect.top,
-            width: rect.width,
-            height: rect.height
-        };
+        if (rect.width > 200 && rect.height > 200) {
+            state.prevRect = {
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+        } else if (!state.prevRect) {
+            const screenW = window.innerWidth;
+            const availH = window.innerHeight - this.menuBarHeight - this.dockHeight;
+            const resW = Math.min(1080, Math.max(900, Math.floor(screenW * 0.72)));
+            const resH = Math.min(720, Math.max(540, Math.floor(availH * 0.82)));
+            state.prevRect = {
+                left: Math.max(15, Math.floor((screenW - resW) / 2)),
+                top: Math.max(this.menuBarHeight + 10, Math.floor((availH - resH) / 2) + this.menuBarHeight),
+                width: resW,
+                height: resH
+            };
+        }
 
         state.isMaximized = true;
         state.element.classList.add('maximized');
@@ -279,6 +301,36 @@ export class WindowManager {
         const state = this.windows.get(appId);
         state.element.classList.add('active');
         state.element.style.zIndex = ++this.zIndexCounter;
+    }
+
+    /**
+     * Ensures a window has at least the given dimensions, expanding it smoothly if smaller.
+     */
+    ensureMinDimensions(appId, targetWidth, targetHeight) {
+        if (!this.windows.has(appId)) return;
+        const state = this.windows.get(appId);
+        if (state.isMaximized || state.isMinimized) return;
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const availableHeight = screenHeight - this.menuBarHeight - this.dockHeight;
+        if (screenWidth <= 768) return;
+
+        const currentW = parseInt(state.element.style.width, 10) || state.element.offsetWidth;
+        const currentH = parseInt(state.element.style.height, 10) || state.element.offsetHeight;
+
+        const neededW = Math.min(screenWidth - 30, Math.max(currentW, targetWidth));
+        const neededH = Math.min(availableHeight - 16, Math.max(currentH, targetHeight));
+
+        if (neededW > currentW || neededH > currentH) {
+            state.element.style.width = `${neededW}px`;
+            state.element.style.height = `${neededH}px`;
+            
+            const newLeft = Math.max(15, Math.floor((screenWidth - neededW) / 2));
+            const newTop = Math.max(this.menuBarHeight + 10, Math.floor((availableHeight - neededH) / 2) + this.menuBarHeight);
+            state.element.style.left = `${newLeft}px`;
+            state.element.style.top = `${newTop}px`;
+        }
     }
     
     // Helper to check window state for dock integration

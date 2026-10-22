@@ -70,13 +70,31 @@ export function initDock(windowManager, finderApp, aboutApp, terminalApp, browse
         icon.classList.add('launching');
         setTimeout(() => icon.classList.remove('launching'), 600);
 
+        if (app === 'projects') {
+            const finderState = windowManager.getWindowState('finder');
+            if (finderState === 'closed') {
+                finderApp.open('/Projects');
+                windowManager.maximize('finder');
+            } else if (finderState === 'minimized') {
+                windowManager.restore('finder');
+                windowManager.maximize('finder');
+                finderApp.navigate('/Projects');
+            } else if (finderState === 'focused' && finderApp.currentPath && finderApp.currentPath.startsWith('/Projects')) {
+                // Clicking while already focused on projects minimizes it
+                windowManager.minimize('finder');
+            } else {
+                windowManager.focus('finder');
+                windowManager.maximize('finder');
+                finderApp.navigate('/Projects');
+            }
+            return;
+        }
+
         const state = windowManager.getWindowState(app);
         
         if (state === 'closed') {
             if (app === 'finder') {
                 finderApp.open('/');
-            } else if (app === 'projects') {
-                finderApp.open('/Projects');
             } else if (app === 'about') {
                 aboutApp.open();
             } else if (app === 'terminal') {
@@ -127,11 +145,19 @@ export function initDock(windowManager, finderApp, aboutApp, terminalApp, browse
         const appId = e.detail.appId;
         const targetIcon = Array.from(icons).find(i => i.getAttribute('data-tooltip').toLowerCase() === appId);
         if (targetIcon) targetIcon.classList.add('running');
+        if (appId === 'finder') {
+            const projectsIcon = Array.from(icons).find(i => i.getAttribute('data-tooltip').toLowerCase() === 'projects');
+            if (projectsIcon) projectsIcon.classList.add('running');
+        }
     });
 
     document.addEventListener('window-closed', (e) => {
         const appId = e.detail.appId;
         const targetIcon = Array.from(icons).find(i => i.getAttribute('data-tooltip').toLowerCase() === appId);
         if (targetIcon) targetIcon.classList.remove('running');
+        if (appId === 'finder') {
+            const projectsIcon = Array.from(icons).find(i => i.getAttribute('data-tooltip').toLowerCase() === 'projects');
+            if (projectsIcon) projectsIcon.classList.remove('running');
+        }
     });
 }

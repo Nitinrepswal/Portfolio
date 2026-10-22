@@ -14,7 +14,7 @@ export const profileData = {
     skills: {
         languages: ["C", "C++", "JavaScript", "Python", "C#"],
         domains: ["Machine Learning", "Backend Development", "Data Structures & Algorithms (DSA)"],
-        technologies: ["Node.js", "Express.js", "MongoDB", "HTML", "CSS", "Git", "Postman", "Streamlit", "Scikit-learn", "XGBoost", "SHAP", "Pandas", "NumPy", "Unity", "React"],
+        technologies: ["PySide6", "Ollama", "Node.js", "Express.js", "MongoDB", "HTML", "CSS", "Git", "Postman", "Streamlit", "Scikit-learn", "XGBoost", "SHAP", "Pandas", "NumPy", "Unity", "React"],
         soft: ["Problem Solving", "Communication", "Teamwork", "Leadership", "Adaptability"]
     },
     education: [

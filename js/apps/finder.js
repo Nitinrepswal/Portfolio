@@ -1,5 +1,5 @@
-import { fileSystem, getFileSystemNode, searchFileSystem } from '../data/filesystem.js';
-import { renderProjectDetail } from '../data/projects.js';
+import { fileSystem, getFileSystemNode, searchFileSystem } from '../data/filesystem.js?v=4';
+import { renderProjectDetail } from '../data/projects.js?v=4';
 
 export class FinderApp {
     constructor(windowManager) {
@@ -14,17 +14,28 @@ export class FinderApp {
     }
 
     open(initialPath = '/') {
-        // Ensure the window is open
+        // Ensure the window is open (Finder / Projects opens maximized by default)
         const containerHTML = `<div id="finder-app" class="finder-container"></div>`;
-        this.windowManager.open('finder', 'Finder', containerHTML);
+        this.windowManager.open('finder', 'Finder', containerHTML, { maximized: true });
+        this.windowManager.maximize('finder');
         
-        // Let the DOM update, then mount the app
-        setTimeout(() => {
-            this.container = document.getElementById('finder-app');
-            if (this.container) {
-                this.navigate(initialPath);
+        this.container = document.getElementById('finder-app');
+        if (this.container) {
+            this.navigate(initialPath);
+            if (initialPath.startsWith('/Projects')) {
+                this.windowManager.maximize('finder');
             }
-        }, 0);
+        } else {
+            setTimeout(() => {
+                this.container = document.getElementById('finder-app');
+                if (this.container) {
+                    if (initialPath.startsWith('/Projects')) {
+                        this.windowManager.maximize('finder');
+                    }
+                    this.navigate(initialPath);
+                }
+            }, 0);
+        }
     }
 
     render() {
@@ -218,12 +229,14 @@ export class FinderApp {
             });
         });
 
-        fileArea.addEventListener('click', () => {
-            if (this.selectedItem !== null) {
-                this.selectedItem = null;
-                this.render();
-            }
-        });
+        if (fileArea) {
+            fileArea.addEventListener('click', () => {
+                if (this.selectedItem !== null) {
+                    this.selectedItem = null;
+                    this.render();
+                }
+            });
+        }
 
         // Search
         const searchInput = this.container.querySelector('.search-input');
@@ -250,6 +263,18 @@ export class FinderApp {
                 this.goUp();
             });
         }
+
+        // Explore Project button smooth scroll
+        const btnExplore = this.container.querySelector('#btn-explore-project');
+        if (btnExplore) {
+            btnExplore.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = this.container.querySelector('#project-architecture') || this.container.querySelector('#project-features');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
     }
 
     navigate(path, isHistory = false) {
@@ -266,6 +291,12 @@ export class FinderApp {
         if (winTitle) {
             const parts = path.split('/').filter(Boolean);
             winTitle.textContent = parts.length > 0 ? parts[parts.length - 1] : "Nitin's Mac";
+        }
+
+        // If viewing projects or project detail, ensure maximized full screen by default
+        const node = getFileSystemNode(path);
+        if (path === '/Projects' || path.startsWith('/Projects') || (node && node.type === 'project')) {
+            this.windowManager.maximize('finder');
         }
         
         this.render();

@@ -1,4 +1,4 @@
-import { projectData } from './projects.js';
+import { projectData } from './projects.js?v=4';
 import { profileData } from './profile.js';
 
 // Build dynamic Main Projects

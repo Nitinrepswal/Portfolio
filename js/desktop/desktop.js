@@ -28,6 +28,7 @@ export function initDesktop(windowManager, finderApp, aboutApp, terminalApp, bro
                 finderApp.open('/');
             } else if (app === 'projects') {
                 finderApp.open('/Projects');
+                windowManager.maximize('finder');
             } else if (app === 'about') {
                 aboutApp.open();
             } else if (app === 'terminal') {
